@@ -72,7 +72,7 @@ def main():
     connection_success = False
     times = 0
     while not connection_success:
-        connection_success = utils.try_connection(args.url)
+        connection_success = utils.try_connection(args.url, timeout=args.wait, follow_redirects=args.follow_redirects)
         if not connection_success and times < 5:
             log.error("connection failed, retrying...")
             times += 1
