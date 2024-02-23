@@ -4,7 +4,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 parser = ArgumentParser(description="""
 Description: this is a python script to bruteforce a website's login page.
 this python script implements an option that hydra does not have.
-basically in hydra, you check if login is succesful or not by checking the presence of am error string,
+basically in hydra, you check if login is succesful or not by checking the presence of an error string,
 but sometimes the error string is not present in the page when login is not successful, 
 the website simply redirects to a page on succesful login, or says nothing.
 this script checks if the login is successful by if checking the website redirects to a page (i.e dashbord.php, home...))""",
@@ -12,7 +12,7 @@ this script checks if the login is successful by if checking the website redirec
 
 # all the arguments that you'll find in the help menu
 parser.add_argument('-u', '--url', type=str, metavar='',
-                    help='the url of the website to brute force (the url should include port and path)', required=True)
+                    help='the url of the website to brute force (the url should be full not relative eg. http://example.com/login.php)', required=True)
 login_group = parser.add_mutually_exclusive_group()
 login_group.add_argument('-l', '--login', type=str,
                          metavar='', help='a single username to test')
@@ -39,3 +39,5 @@ parser.add_argument('-t', '--threads', default=10, type=int, metavar='',
                     help='the number of threads to use (default=10)', required=False)
 parser.add_argument('-w', '--wait', default=1, type=int, metavar='',
                     help='the time to wait between each request in seconds (default=0)', required=False)
+parser.add_argument("-fr", "--follow-redirects", default=True, type=bool, metavar='',
+                    help="whether or not to follow redirect, and thus treat 3XX status codes as failure or not", required=False)
