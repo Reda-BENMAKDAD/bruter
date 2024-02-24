@@ -31,7 +31,7 @@ python bruter.py --help
 ```
 
 ## Development
-This project is still in the development, i am still working on it to add more checks and coditions to know if the login attempt failed or succeded, and to make it more efficient and faster.
+This project is still in the development, i am still working on it to add more checks and coditions to know if the login attempt failed or succeded without a failure message, and to make it more efficient and faster.
 if you have any suggestions or ideas, feel free to open an issue or a pull request.
 
 
