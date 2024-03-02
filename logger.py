@@ -6,8 +6,8 @@ class logger:
     """
 
     # basically these are the AINSI escape codes
-    # i have no clue how they work but if you wrapp your text
-    # between a color code and a end code, it will be colored
+    # and if you wrapp your text
+    # between a "color code" and a "end code", the terminal colors you codep
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
