@@ -14,7 +14,7 @@ def try_connection(url, follow_redirects=True):
         return {"success": False, "message": f"Connection timed out."}
     except requests.RequestException as e:
         return {"success":False, "message": f"An error occurred during the request: {str(e)}"}
-    
+
     
 def print_banner() -> None:
     print("""

@@ -51,6 +51,7 @@ def brute_force(username, password):
         for thread in threading.enumerate():
             if thread is not threading.current_thread():
                 thread.join()
+        
         exit(0)
 
     else:
@@ -62,24 +63,22 @@ def brute_force(username, password):
 
 def main():
     if (verbosity):
-
         log.header(f"starting brute force with {args.threads} threads")
-    connection_success = False
-    times = 0
-    while not connection_success:
-        connection_success = utils.try_connection(
-            args.url, follow_redirects=args.follow_redirects)["success"]
-        if not connection_success and times < 5:
-            log.error(connection_success["message"])
-            times += 1
-            sleep(args.wait)
-
-        if times == 5:
-            log.error(
-                "could not establish a connection to the target, exiting...")
+    
+    success, message = None, None
+    
+    for i in range(5):
+        success, message = utils.try_connection(args.url, follow_redirects=args.follow_redirects).values()
+        print(success)
+        if success: break
+        log.error(message)
+        sleep(args.wait)
+        if i == 4 :
+            log.error("could not establish a connection to the target, exiting...")
             exit(1)
+        
 
-    if connection_success:
+    if success:
         if verbosity:
             log.okblue("connection successful")
     for username in username_list:
@@ -88,7 +87,8 @@ def main():
             t.start()
             # this infinite loop will run if the count of the active threads is higher than the threads allowed by the user to stop creation of new threads
             # once this number of active threads goes down, we exit from the loop and we can start new threads
-            while threading.active_count() > args.threads:
+            while threading.active_count() > args.threads + 1:
+                print(threading.active_count())
                 pass
 
     while all([th.is_alive() for th in threading.enumerate()]):
