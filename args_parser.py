@@ -41,3 +41,6 @@ parser.add_argument('-w', '--wait', default=1, type=int, metavar='',
                     help='the time to wait between each request in seconds (default=0)', required=False)
 parser.add_argument("-fr", "--follow-redirects", default=True, type=bool, metavar='',
                     help="whether or not to follow redirect, and thus treat 3XX status codes as failure or not", required=False)
+
+parser.add_argument("-sp", "--success-page", type=str, metavar='',
+                    help="if the website redirects to this page, it means that the login was successful (eg. dashboard.php, home...)", required=False)
