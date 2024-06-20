@@ -15,7 +15,7 @@ Clone the repository and install the requirements:
 ```bash
 git clone https://github.com/reda-benmakdad/bruter.git
 
-cd nhy
+cd bruter
 
 pip install -r requirements.txt
 ```
